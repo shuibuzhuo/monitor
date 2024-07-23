@@ -1,10 +1,17 @@
+const https = require('https')
 const cron = require('node-cron')
 const axios = require('axios')
 const { sendEmail } = require('./lib/mailer')
 require('dotenv').config()
 
+const instance = axios.create({
+  httpsAgent: new https.Agent({
+    rejectUnauthorized: false
+  })
+})
+
 function monit (arguments) {
-  axios.post(`${process.env.SERVER_HOST}/api/monitor`) 
+  instance.post(`${process.env.SERVER_HOST}/api/monitor`) 
     .then(res => {
       const data = res.data || {} // { errno, data, msg }
       const { errno, msg } = data;
